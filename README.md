@@ -16,11 +16,12 @@ A Julep AI workflow that creates personalized one-day foodie tours for multiple 
 
 ## 🏗️ Project Structure
 
+```
 foodie-planner/
 ├── foodie-tour-nodejs/ # Node.js implementation
 ├── foodie-tour-python/ # Python implementation
 └── README.md # This file
-
+```
 
 ## 🚀 Quick Start
 
