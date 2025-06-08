@@ -1,0 +1,76 @@
+name: Foodie Tour Planner
+description: Create a one-day foodie tour for a list of cities, considering weather and local dishes.
+
+input_schema:
+  type: object
+  properties:
+    cities:
+      type: array
+      items:
+        type: string
+
+tools:
+  - name: weather
+    type: integration
+    integration:
+      provider: weather
+      setup:
+        openweathermap_api_key: ${OPEN_WEATHER_API_KEY}
+
+  - name: internet_search
+    type: integration
+    integration:
+      provider: brave
+      method: search
+      setup:
+        brave_api_key: ${BRAVE_API_KEY}
+
+main:
+  # Step 0: Get weather for each city
+  - over: input.cities
+    map:
+      tool: weather
+      arguments:
+        location: _
+
+  # Step 1: Find iconic dishes for each city
+  - over: input.cities
+    map:
+      tool: internet_search
+      arguments:
+        query: "'3 iconic dishes of ' + _"
+
+  # Step 2: Find restaurants for each city and their dishes
+  - over: "zip(input.cities, outputs[1])"
+    map:
+      tool: internet_search
+      arguments:
+        query: "'top-rated restaurants in ' + _[0] + ' serving ' + _[1]"
+
+  # Step 3: Generate foodie tour itinerary
+  - over: "zip(input.cities, outputs[0], outputs[1], outputs[2])"
+    parallelism: 3
+    map:
+      prompt:
+        - role: system
+          content: >-
+            You are a travel foodie assistant. Your task is to design a delightful one-day foodie tour for a city, based on:
+            - Weather (to decide if meals are indoors or outdoors)
+            - Three iconic dishes
+            - Restaurant options for each meal
+
+            Output a short, engaging itinerary for:
+            - Breakfast
+            - Lunch
+            - Dinner
+
+            Each should include the name of the dish, restaurant, dining recommendation (indoor/outdoor), and a short narrative.
+        - role: user
+          content: >-
+            City: {_[0]}
+            Weather: {_[1]}
+            Iconic Dishes: {_[2]}
+            Restaurant Results: {_[3]}
+
+  - evaluate:
+      foodie_tours: "'\n\n============================\n\n'.join(outputs[3])"

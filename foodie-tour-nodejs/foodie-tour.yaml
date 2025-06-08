@@ -1,0 +1,77 @@
+name: Foodie Tour Planner
+description: Create a one-day foodie tour for a list of cities, considering weather and local dishes.
+
+input_schema:
+  type: object
+  properties:
+    cities:
+      type: array
+      items:
+        type: string
+
+tools:
+  - name: weather
+    type: integration
+    integration:
+      provider: weather
+      setup:
+        openweathermap_api_key: ${OPEN_WEATHER_API_KEY}
+
+  - name: internet_search
+    type: integration
+    integration:
+      provider: brave
+      method: search
+      setup:
+        api_key: ${BRAVE_API_KEY}
+
+main:
+  # Step 0
+  - over: $ input.cities
+    map:
+      tool: weather
+      arguments:
+        location: $ _
+
+  # Step 1
+  - over: $ input.cities
+    map:
+      tool: internet_search
+      arguments:
+        query: $ '3 iconic dishes of ' + _
+
+  # Step 2
+  - over: $ zip(input.cities, steps[1].output)
+    map:
+      tool: internet_search
+      arguments:
+        query: $ 'top-rated restaurants in ' + _[0] + ' serving ' + _[1]
+
+  # Step 3
+  - over: $ zip(input.cities, steps[0].output, steps[1].output, steps[2].output)
+    parallelism: 3
+    map:
+      prompt:
+        - role: system
+          content: >-
+            You are a travel foodie assistant. Your task is to design a delightful one-day foodie tour for a city, based on:
+            - Weather (to decide if meals are indoors or outdoors)
+            - Three iconic dishes
+            - Restaurant options for each meal
+
+            Output a short, engaging itinerary for:
+            - Breakfast
+            - Lunch
+            - Dinner
+
+            Each should include the name of the dish, restaurant, dining recommendation (indoor/outdoor), and a short narrative.
+        - role: user
+          content: >-
+            City: "{_[0]}"
+            Weather: "{_[1]}"
+            Iconic Dishes: "{_[2]}"
+            Restaurant Results: "{_[3]}"
+
+  - evaluate:
+      foodie_tours: |-
+        $ '\\n\\n============================\\n\\n'.join(tour for tour in _)

@@ -1,0 +1,18 @@
+{
+  "name": "foodie-tour",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@julep/sdk": "^1.71.5",
+    "dotenv": "^16.5.0",
+    "yaml": "^2.8.0"
+  }
+}
