@@ -39,47 +39,35 @@ foodie-planner/
 - [OpenWeather API Key](https://openweathermap.org/api) - Weather data
 - [Brave Search API Key](https://brave.com/search/api/) - Web search
 
-### Installation & Setup
+### 🔧 Installation & Setup
 
-1. **Clone the repository**
+# 1. Clone the repository
+```
 git clone <your-repo-url>
 cd foodie-tour-workflow
+```
 
-2. **Choose your implementation:**
+# 2. Choose your implementation
 
-**Node.js Setup:**
-cd nodejs
+# --- Node.js Setup ---
+```
+cd foodie-tour-nodejs
 npm install
 cp .env.example .env
-
-Edit .env with your API keys
-
-**Python Setup:**
-cd python
-pip install -r requirements.txt
-cp .env.example .env
-
-Edit .env with your API keys
-text
-
-3. **Configure environment variables**
-
-Edit your `.env` file:
-JULEP_API_KEY=your_julep_api_key_here
-OPENWEATHER_API_KEY=your_openweather_api_key_here
-BRAVE_API_KEY=your_brave_search_api_key_here
-
-### Running the Workflow
-
-**Node.js:**
-cd nodejs
+# Edit .env with your API keys
+# Then to run:
 node index.js
 
-text
+# --- OR ---
 
-**Python:**
-cd python
+# --- Python Setup ---
+cd foodie-tour-python
+pip install -r requirements.txt
+cp .env.example .env
+# Edit .env with your API keys
+# Then to run:
 python main.py
+```
 
 ## 📋 Sample Output
 
@@ -127,44 +115,6 @@ The workflow consists of 4 main steps:
 - **Parallelism**: Step 3 runs with parallelism=3 for faster processing
 - **Rate Limiting**: Handles API rate limits gracefully
 
-## 🔧 Customization
-
-### Modify Cities
-
-Edit the input in your main file:
-
-**Node.js (`index.js`):**
-const execution = await client.executions.create(task.id, {
-input: {
-cities: ["Paris", "Rome", "Barcelona"], // Your cities here
-},
-});
-
-text
-
-**Python (`main.py`):**
-execution = client.executions.create(
-task_id=task.id,
-input={
-"cities": ["Paris", "Rome", "Barcelona"] # Your cities here
-}
-)
-
-
-### Customize Workflow
-
-The workflow definition is in `shared/foodie-tour.yaml`. You can modify:
-- Number of dishes per city
-- Restaurant search criteria  
-- Itinerary structure
-- Prompt instructions
-
-## 🔒 Security
-
-- **API Keys**: Never commit `.env` files - they're in `.gitignore`
-- **Environment Variables**: Use `.env.example` as a template
-- **Secrets Management**: Consider using GitHub Secrets for CI/CD
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -181,7 +131,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Common Issues
 
-**Workflow runs indefinitely:**
+**Workflow runs for a longer time:**
 - Check API key validity
 - Verify rate limits aren't exceeded
 - Try with fewer cities for testing
